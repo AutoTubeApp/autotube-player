@@ -42,8 +42,8 @@ const body= `
 `
 document.querySelector('#app').innerHTML = body
 
-const posterUrl="sad-woman/thumbnail-play.jpg"
-const manifestUrl="sad-woman/dash.mpd"
+const posterUrl="thumbnail-play.jpg"
+const manifestUrl="dash.mpd"
 
 
 // shaka player
