@@ -8,7 +8,7 @@ markup, css, and handle video player.
 => With this solution we can:
 - have homogenous player for all videos and users.
 - update the player without having to update the app.
-- play video everywhere without taking care of the fuck**g CORS policy
+- play video everywhere without taking care of the fuck**g CORS policy.
 
 ## Dev
 

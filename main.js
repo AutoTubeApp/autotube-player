@@ -1,4 +1,5 @@
 import 'normalize.css'
+import './styles.css'
 
 // head
 const scripts = [
@@ -39,21 +40,81 @@ const body= `
         <video data-shaka-player  id="video"  poster=""></video>
 </div>
 `
-
 document.querySelector('#app').innerHTML = body
 
+const posterUrl="sad-woman/thumbnail-play.jpg"
+const manifestUrl="sad-woman/dash.mpd"
+
+
 // shaka player
-const initShakaPlayer = (evt) => {
-    console.log('Shake UI loaded')
-    console.log(evt)
+const initShakaPlayer = async(evt) => {
+    //console.log('Shake UI loaded')
+    // When using the UI, the player is made automatically by the UI object.
+    const video = document.getElementById('video')
+    // set poster
+    video.setAttribute('poster', posterUrl)
+
+    const ui = video.ui
+    const controls = ui.getControls()
+    const player = controls.getPlayer()
+
+    // Attach player and ui to the window to make it easy to access in the JS console.
+    window.player = player
+    window.ui = ui
+
+    // config
+    player.configure({
+        abr: { // let it load a 3500 kbps version first
+            defaultBandwidthEstimate: 10000000
+        },
+        streaming: {
+            bufferingGoal: 4, // small buffers to enable quick quality switch
+            rebufferingGoal: 2,
+            bufferBehind: 20
+        },
+        manifest: {
+            defaultPresentationDelay: 30
+        }
+    })
+
+    // Listen for error events.
+    player.addEventListener('error', onPlayerErrorEvent)
+    controls.addEventListener('error', onUIErrorEvent)
+
+    // Try to load a manifest.
+    // This is an asynchronous process.
+    try {
+        await player.load(manifestUrl)
+        // This runs if the asynchronous load is successful.
+        // console.log('The video has now been loaded!')
+        parent.postMessage('video loaded', '*')
+    } catch (error) {
+        onPlayerError(error)
+    }
 }
 
 const initFailed = (evt) => {
     // Handle the failure to load; errorEvent.detail.reasonCode has a
     // shaka.ui.FailReasonCode describing why.
-    console.error('Unable to load the UI library!')
-    console.log(evt)
+    console.error('Unable to load the UI library!' + evt.detail)
+    //console.log(evt)
 }
+
+const onPlayerErrorEvent = (evt) => {
+    // Extract the shaka.util.Error object from the event.
+    onPlayerError(evt.detail)
+}
+
+function onPlayerError (error) {
+    // Handle player error
+    console.error('Error code', error.code, 'object', error)
+}
+
+function onUIErrorEvent (evt) {
+    // Extract the shaka.util.Error object from the event.
+    onPlayerError(evt.detail)
+}
+
 
 // shaka player events
 // Listen to the custom shaka-ui-loaded event, to wait until the UI is loaded.
