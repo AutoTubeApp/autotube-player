@@ -47,7 +47,7 @@ const manifestUrl="dash.mpd"
 
 
 // shaka player
-const initShakaPlayer = async(evt) => {
+const initShakaPlayer = async() => {
     //console.log('Shake UI loaded')
     // When using the UI, the player is made automatically by the UI object.
     const video = document.getElementById('video')
@@ -86,8 +86,13 @@ const initShakaPlayer = async(evt) => {
     try {
         await player.load(manifestUrl)
         // This runs if the asynchronous load is successful.
-        // console.log('The video has now been loaded!')
-        parent.postMessage('video loaded', '*')
+        //console.log('The video has now been loaded!')
+        parent.postMessage('video_loaded', '*')
+        window.addEventListener('message', (event) => {
+            if (event.data === 'play') {
+                video.play()
+            }
+        })
     } catch (error) {
         onPlayerError(error)
     }
