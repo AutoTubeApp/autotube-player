@@ -62,7 +62,11 @@ const handleMessage = (event) => {
 // main
 window.onresize = resizeIframe
 window.addEventListener('message', handleMessage)
-window.addEventListener('load', resizeIframe)
+window.addEventListener('load', () => {
+    setTimeout(() => {
+        resizeIframe()
+    }, 1000)
+})
 
 //dark mode
 const selectElement = window.document.querySelector('#toggle-dark-mode')
