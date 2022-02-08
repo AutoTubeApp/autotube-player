@@ -1,6 +1,6 @@
 import './index.css'
 
-const embedTemplate = `<iframe  width="{{width}}" height="{{height}}"src="{{baseURL}}/embed.html" title="{{title}}" frameborder="0" 
+const embedTemplate = `<iframe  width="{{width}}" height="{{height}}" src="{{baseURL}}/embed.html" title="{{title}}" frameborder="0" 
 allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen>
 </iframe>
 `
@@ -22,9 +22,8 @@ const getPlayerContainer = () => {
 }
 
 const getBaseUrl = () => {
-    return window.location.origin
+    return window.location.origin + window.document.querySelector('title').innerText.toLowerCase()
 }
-
 
 function handleIframeLoaded() {
     getPlayerContainer().setAttribute('style', 'max-height:700px;')
