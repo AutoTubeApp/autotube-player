@@ -22,7 +22,7 @@ const getPlayerContainer = () => {
 }
 
 const getBaseUrl = () => {
-    return window.location.origin + window.document.querySelector('title').innerText.toLowerCase()
+    return window.location.href.split('?', 1)[0].split('/').slice(0, -1).join('/')
 }
 
 function handleIframeLoaded() {
@@ -64,7 +64,7 @@ window.addEventListener('message', handleMessage)
 window.addEventListener('load', () => {
     setTimeout(() => {
         resizeIframe()
-    }, 1000)
+    }, 500)
 })
 
 //dark mode
