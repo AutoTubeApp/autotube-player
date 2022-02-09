@@ -32,7 +32,7 @@
     <link rel="icon" type="image/svg+xml" href="favicon.svg" />
     <script type="module" src="./main.js"></script>
 </head>
-<body class="bg-white bg-neutral-50 text-zinc-800 dark:bg-neutral-900 dark:text-zinc-100">
+<body class="bg-neutral-50 text-zinc-800 dark:bg-neutral-900 dark:text-zinc-100">
 <div class="flex flex-row justify-center">
     <main class="max-w-screen-md flex-grow px-2 opacity-0">
         <header class="flex-grow text-center my-4">
@@ -40,14 +40,13 @@
         </header>
         <div id="iframe-container">
             <iframe
-                    class="w-full"
+                    class="w-full aspect-video"
                     id="iVideo"
                     src="embed.html"
                     title="Autotube video player"
                     allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
                     allowfullscreen
                     scrolling="no"
-                    onload="handleIframeLoaded()"
             >
             </iframe>
             <div class=" flex flex-grow justify-end mt-1">

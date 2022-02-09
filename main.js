@@ -13,20 +13,8 @@ const getMain = () => {
     return window.document.querySelector('main')
 }
 
-const getPlayerContainer = () => {
-    return getIframe().contentWindow.document.querySelector('#player-container')
-}
-
 const getBaseUrl = () => {
     return window.location.href.split('?', 1)[0].split('/').slice(0, -1).join('/')
-}
-
-function handleIframeLoaded() {
-    getPlayerContainer().setAttribute('style', 'max-height:700px;')
-}
-
-const resizeIframe = (playerSize) => {
-    getIframe().style.height = `${playerSize.height}px`
 }
 
 const hydrateHtml = () => {
@@ -46,14 +34,10 @@ const hydrateHtml = () => {
 }
 
 const handleMessage = (event) => {
-    if (event.data.type === 'player-size') {
-        resizeIframe(event.data)
-    }
     if (event.data === 'att-video-loaded') {
         getMain().classList.remove('opacity-0')
     }
 }
-
 // main
 window.addEventListener('message', handleMessage)
 
@@ -70,9 +54,5 @@ selectElement.addEventListener('change', (evt) => {
 
 // hydrate html
 hydrateHtml()
-
-// export (kind of)
-window.handleIframeLoaded = handleIframeLoaded
-
 
 

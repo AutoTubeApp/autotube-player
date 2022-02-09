@@ -27,36 +27,31 @@ css.forEach(css => {
 })
 
 // body
-const body= `
+const body = `
 <!-- The data-shaka-player-container tag will make the UI library place the controls in this div.
      The data-shaka-player-cast-receiver-id tag allows you to provide a Cast Application ID that
      the cast button will cast to; the value provided here is the sample cast receiver. -->
 <div id="player-container"
+    class="justify-center"
          data-shaka-player-container
          data-shaka-player-cast-receiver-id="930DEB06">
         <!-- The data-shaka-player tag will make the UI library use this video element.
              If no video is provided, the UI will automatically make one inside the container div. -->
-        <video data-shaka-player  id="video"  poster="" class="flex-grow"></video>
+        <video data-shaka-player  id="video"  poster=""></video>
 </div>
 `
 document.querySelector('#app').innerHTML = body
 
-const posterUrl="thumbnail-play.jpg"
-const manifestUrl="dash.mpd"
+const posterUrl = "thumbnail-play.jpg"
+const manifestUrl = "dash.mpd"
 
-const sendPlayerSize = () => {
-    const width = window.document.querySelector('.shaka-scrim-container').clientWidth
-    const height = window.document.querySelector('.shaka-scrim-container').clientHeight
-    const message = {
-        type: 'player-size',
-        width,
-        height
-    }
-    parent.postMessage(message, '*',)
+const resizePlayer = () => {
+    const videoContainer = window.document.querySelector('.shaka-video-container')
+    videoContainer.style.height = `${window.innerHeight}px`
 }
 
 // shaka player
-const initShakaPlayer = async() => {
+const initShakaPlayer = async () => {
     //console.log('Shake UI loaded')
     // When using the UI, the player is made automatically by the UI object.
     const video = document.getElementById('video')
@@ -99,9 +94,9 @@ const initShakaPlayer = async() => {
         //console.log('The video has now been loaded!')
         parent.postMessage('att-video-loaded', '*')
         // send player size
-        sendPlayerSize()
+        resizePlayer()
         // listen for player size changes
-        window.addEventListener('resize', sendPlayerSize)
+        window.addEventListener('resize', resizePlayer)
         // listen from parent
         window.addEventListener('message', (event) => {
             if (event.data === 'play') {
@@ -125,12 +120,12 @@ const onPlayerErrorEvent = (evt) => {
     onPlayerError(evt.detail)
 }
 
-function onPlayerError (error) {
+function onPlayerError(error) {
     // Handle player error
     console.error('Error code', error.code, 'object', error)
 }
 
-function onUIErrorEvent (evt) {
+function onUIErrorEvent(evt) {
     // Extract the shaka.util.Error object from the event.
     onPlayerError(evt.detail)
 }
@@ -142,3 +137,5 @@ document.addEventListener('shaka-ui-loaded', initShakaPlayer)
 // Listen to the custom shaka-ui-load-failed event, in case Shaka Player fails
 // to load (e.g. due to lack of browser support).
 document.addEventListener('shaka-ui-load-failed', initFailed)
+
+
