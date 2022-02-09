@@ -13,10 +13,6 @@ const getMain = () => {
     return window.document.querySelector('main')
 }
 
-const getVideoContainer = () => {
-    return getIframe().contentWindow.document.querySelector('.shaka-scrim-container')
-}
-
 const getPlayerContainer = () => {
     return getIframe().contentWindow.document.querySelector('#player-container')
 }
