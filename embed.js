@@ -2,13 +2,13 @@ import './index.css'
 
 // head
 const scripts = [
-    ['https://cdnjs.cloudflare.com/ajax/libs/shaka-player/3.0.10/shaka-player.compiled.js'],
-    ['https://cdnjs.cloudflare.com/ajax/libs/shaka-player/3.0.10/shaka-player.ui.min.js'],
+    ['https://cdnjs.cloudflare.com/ajax/libs/shaka-player/3.3.1/shaka-player.compiled.js'],
+    ['https://cdnjs.cloudflare.com/ajax/libs/shaka-player/3.3.1/shaka-player.ui.min.js'],
     ['https://www.gstatic.com/cv/js/sender/v1/cast_sender.js']
 ]
 
 const css = [
-    ['https://cdnjs.cloudflare.com/ajax/libs/shaka-player/3.0.10/controls.min.css']
+    ['https://cdnjs.cloudflare.com/ajax/libs/shaka-player/3.3.1/controls.min.css']
 ]
 
 // add scripts
@@ -52,7 +52,7 @@ const initShakaPlayer = async() => {
     const video = document.getElementById('video')
     // set poster
     video.setAttribute('poster', posterUrl)
-    video.setAttribute('style', "background-color: black;")
+    //video.setAttribute('style', "background-color: black;")
 
     const ui = video.ui
     const controls = ui.getControls()
