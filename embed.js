@@ -44,6 +44,16 @@ document.querySelector('#app').innerHTML = body
 const posterUrl="thumbnail-play.jpg"
 const manifestUrl="dash.mpd"
 
+const sendPlayerSize = () => {
+    const width = window.document.querySelector('.shaka-scrim-container').clientWidth
+    const height = window.document.querySelector('.shaka-scrim-container').clientHeight
+    const message = {
+        type: 'player-size',
+        width,
+        height
+    }
+    parent.postMessage(message, '*',)
+}
 
 // shaka player
 const initShakaPlayer = async() => {
@@ -88,6 +98,11 @@ const initShakaPlayer = async() => {
         // This runs if the asynchronous load is successful.
         //console.log('The video has now been loaded!')
         parent.postMessage('att-video-loaded', '*')
+        // send player size
+        sendPlayerSize()
+        // listen for player size changes
+        window.addEventListener('resize', sendPlayerSize)
+        // listen from parent
         window.addEventListener('message', (event) => {
             if (event.data === 'play') {
                 video.play()
