@@ -44,17 +44,13 @@ document.querySelector('#app').innerHTML = body
 
 const posterUrl = "thumbnail-play.jpg"
 const manifestUrl = "dash.mpd"
-
-const resizePlayer = () => {
-    const videoContainer = window.document.querySelector('.shaka-video-container')
-    videoContainer.style.height = `${window.innerHeight}px`
-}
+let video
 
 // shaka player
 const initShakaPlayer = async () => {
     //console.log('Shake UI loaded')
     // When using the UI, the player is made automatically by the UI object.
-    const video = document.getElementById('video')
+    video = document.getElementById('video')
     // set poster
     video.setAttribute('poster', posterUrl)
     //video.setAttribute('style', "background-color: black;")
@@ -95,14 +91,8 @@ const initShakaPlayer = async () => {
         parent.postMessage('att-video-loaded', '*')
         // send player size
         resizePlayer()
-        // listen for player size changes
-        window.addEventListener('resize', resizePlayer)
-        // listen from parent
-        window.addEventListener('message', (event) => {
-            if (event.data === 'play') {
-                video.play()
-            }
-        })
+        // init api
+        initApi()
     } catch (error) {
         onPlayerError(error)
     }
@@ -130,6 +120,38 @@ function onUIErrorEvent(evt) {
     onPlayerError(evt.detail)
 }
 
+const resizePlayer = () => {
+    const videoContainer = window.document.querySelector('.shaka-video-container')
+    videoContainer.style.height = `${window.innerHeight}px`
+}
+
+const getVideoSize = () => {
+    const videoContainer = window.document.querySelector('.shaka-video-container')
+    return {
+        width: videoContainer.offsetWidth,
+        height: videoContainer.offsetHeight,
+        ratio: videoContainer.offsetWidth / videoContainer.offsetHeight
+    }
+}
+
+const initApi = () => {
+    // listen for player size changes
+    window.addEventListener('resize', resizePlayer)
+    // listen from parent
+    window.addEventListener('message', (event) => {
+        console.log('message from parent', event.data)
+        switch (event.data) {
+            case 'att-video-play':
+                video.play()
+                break
+            case 'att-video-size':
+                parent.postMessage(getVideoSize(), '*')
+                break
+            default:
+                break
+        }
+    })
+}
 
 // shaka player events
 // Listen to the custom shaka-ui-loaded event, to wait until the UI is loaded.
