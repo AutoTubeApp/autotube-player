@@ -42,7 +42,7 @@ const body = `
 `
 document.querySelector('#app').innerHTML = body
 
-const posterUrl = "thumbnail-play.jpg"
+const posterUrl = "thumbnail.jpg"
 const manifestUrl = "dash.mpd"
 let video
 
