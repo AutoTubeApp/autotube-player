@@ -1,6 +1,6 @@
 import './index.css'
 
-const embedTemplate = `<iframe  width="{{width}}" height="{{height}}" src="{{baseURL}}/embed.html" title="{{title}}" frameborder="0" 
+const embedTemplate = `<iframe  width="560" height="315" src="{{baseURL}}/embed.html" title="{{title}}" frameborder="0" 
 allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen>
 </iframe>
 `
@@ -19,18 +19,11 @@ const getBaseUrl = () => {
 
 const hydrateHtml = () => {
     const title = window.document.querySelector('title').innerText
-    const width = getIframe().clientWidth.toString()
-    const height = getIframe().clientHeight.toString()
     let embed = embedTemplate.replaceAll('{{baseURL}}', getBaseUrl())
     embed = embed.replaceAll('{{title}}', title)
-    embed = embed.replaceAll('{{width}}', width)
-    embed = embed.replaceAll('{{height}}', height)
-
     const dashLink = getBaseUrl() + '/dash.mpd'
-
     window.document.querySelector('#embed-code').innerHTML = embed.replaceAll('<', '&lt').replaceAll('>', '&gt')
     window.document.querySelector('#dash-link').innerHTML = dashLink
-
 }
 
 const handleMessage = (event) => {

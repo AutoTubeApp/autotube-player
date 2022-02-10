@@ -3,68 +3,80 @@
 <head>
     <meta charset="UTF-8">
     <title>##title##</title>
-    <meta name="description" content="##cardDescription##" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <meta name="twitter:card" content="player" />
-    <meta name="twitter:site" content="@autotube_app" />
-    <meta name="twitter:url" content="##siteUrl##/" />
-    <meta name="twitter:title" content="##cardTitle##" />
-    <meta name="twitter:description" content="##cardDescription##" />
-    <meta name="twitter:image" content="##siteUrl##/thumbnail.jpg" />
-    <meta name="twitter:player" content="##siteUrl##/embed.html" />
+    <meta name="description" content="##cardDescription##"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1"/>
+    <meta name="twitter:card" content="player"/>
+    <meta name="twitter:site" content="@autotube_app"/>
+    <meta name="twitter:url" content="##siteUrl##/"/>
+    <meta name="twitter:title" content="##cardTitle##"/>
+    <meta name="twitter:description" content="##cardDescription##"/>
+    <meta name="twitter:image" content="##siteUrl##/thumbnail.jpg"/>
+    <meta name="twitter:player" content="##siteUrl##/embed.html"/>
     <meta name="twitter:player:width" content="##playerW##">
     <meta name="twitter:player:height" content="##playerH##">
     <meta property="og:ttl" content="600"/>
-    <meta property="og:site_name" content="Autotube" />
-    <meta property="og:url" content="##siteUrl##/" />
-    <meta property="og:title" content="##cardTitle##" />
-    <meta property="og:image" content="##siteUrl##/thumbnail-play.jpg" />
-    <meta property="og:image:width" content="##playerW##" />
-    <meta property="og:image:height" content="##playerH##" />
-    <meta property="og:description" content="##cardDescription##" />
-    <meta property="al:web:url" content="##siteUrl##" />
-    <meta property="og:type" content="video.other" />
-    <meta property="og:video" content="##siteUrl##/embed.html" />
-    <meta property="og:video:type" content="text/html" />
+    <meta property="og:site_name" content="Autotube"/>
+    <meta property="og:url" content="##siteUrl##/"/>
+    <meta property="og:title" content="##cardTitle##"/>
+    <meta property="og:image" content="##siteUrl##/thumbnail-play.jpg"/>
+    <meta property="og:image:width" content="##playerW##"/>
+    <meta property="og:image:height" content="##playerH##"/>
+    <meta property="og:description" content="##cardDescription##"/>
+    <meta property="al:web:url" content="##siteUrl##"/>
+    <meta property="og:type" content="video.other"/>
+    <meta property="og:video" content="##siteUrl##/embed.html"/>
+    <meta property="og:video:type" content="text/html"/>
     <meta property="og:video:width" content="##playerW##">
     <meta property="og:video:height" content="##playerH##">
-    <meta property="og:video:tag" content="autotube" />
-    <link rel="icon" type="image/svg+xml" href="favicon.svg" />
+    <meta property="og:video:tag" content="autotube"/>
+    <link rel="icon" type="image/svg+xml" href="favicon.svg"/>
     <script type="module" src="./main.js"></script>
 </head>
 <body class="bg-neutral-50 text-zinc-800 dark:bg-neutral-900 dark:text-zinc-100">
-<div class="flex flex-row justify-center">
-    <main class="max-w-screen-md flex-grow px-2 opacity-0">
-        <header class="flex-grow text-center my-4">
-            <h1 id="title" class="text-4xl font-medium">##title##</h1>
-        </header>
-        <div id="iframe-container">
-            <iframe
-                    class="w-full aspect-video"
-                    id="iVideo"
-                    src="embed.html"
-                    title="Autotube video player"
-                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                    allowfullscreen
-                    scrolling="no"
-            >
-            </iframe>
-            <div class=" flex flex-grow justify-end mt-1">
-                <label for="toggle-dark-mode">
-                    <input type="checkbox" id="toggle-dark-mode" checked>
-                    <span>Dark mode</span>
-                </label>
+<div class="h-screen">
+    <div class="min-h-screen flex flex-col">
+        <main class="max-w-screen-md mx-auto px-2 opacity-0">
+            <header class="text-center my-4">
+                <h1 id="title" class="mt-3 mb-6 text-4xl font-medium">##title##</h1>
+            </header>
+            <div id="iframe-container">
+                <iframe
+                        class="w-full aspect-video"
+                        id="iVideo"
+                        src="embed.html"
+                        title="Autotube video player"
+                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                        allowfullscreen
+                        scrolling="no"
+                >
+                </iframe>
+                <div class="flex justify-end mt-1">
+                    <label for="toggle-dark-mode">
+                        <input type="checkbox" id="toggle-dark-mode" checked>
+                        <span>Dark mode</span>
+                    </label>
+                </div>
+                <p class="my-3 mt-2">##description##</p>
+                <h2 class="my-3 mt-7 text-lg">Embed video: copy and paste code below on your website</h2>
+                <div id="embed-code"
+                     class="my-2 p-2 border rounded-md bg-white dark:bg-neutral-800 dark:border-neutral-600 break-all font-mono text-sm shadow-inner">
+                    bala
+                </div>
+                <h2 class="mt-7 text-lg">Dash manifest</h2>
+                <div id="dash-link"
+                     class="my-2 p-3 border rounded-md bg-white dark:bg-neutral-800 dark:border-neutral-600 break-all font-mono text-sm shadow-inner">
+                    mani
+                </div>
             </div>
-            <p class="my-3">##description##</p>
-            <h2 class="my-3 text-lg">Embed video: copy and paste code below on your website</h2>
-            <div id="embed-code" class="my-2 p-2 border-2 rounded-md bg-white dark:bg-neutral-800 dark:border-neutral-600 break-all font-mono text-sm">bala</div>
-            <h2 class="mt-4 text-lg">Dash manifest</h2>
-            <div id="dash-link" class="my-2 p-3 border-2 rounded-md bg-white dark:bg-neutral-800 dark:border-neutral-600 break-all font-mono text-sm">mani</div>
-        </div>
-        <footer class="flex justify-center mt-8">
-            <p>Video encoded and published with <a class="underline hover:no-underline" href="https://autotube.app">Autotube</a></p>
+        </main>
+        <footer class="flex flex-col-reverse flex-grow mx-auto">
+            <p class="pb-16 text-sm">Video encoded and published with
+                <a class="no-underline" href="https://autotube.app"><span class="underline">AutoTube</span>, the YouTube
+                    alternative.
+                </a>
+            </p>
         </footer>
-    </main>
+    </div>
 </div>
 </body>
 </html>
