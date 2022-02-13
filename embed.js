@@ -80,7 +80,15 @@ const initShakaPlayer = async () => {
 
     // Listen for error events.
     player.addEventListener('error', onPlayerErrorEvent)
+    player.addEventListener('buffering', (evt) => {
+        //console.log('LoadedEvent')
+        console.log(evt)
+        if (!evt.buffering) {
+            parent.postMessage('att-video-loaded', '*')
+        }
+    })
     controls.addEventListener('error', onUIErrorEvent)
+
 
     // Try to load a manifest.
     // This is an asynchronous process.
@@ -88,7 +96,8 @@ const initShakaPlayer = async () => {
         await player.load(manifestUrl)
         // This runs if the asynchronous load is successful.
         //console.log('The video has now been loaded!')
-        parent.postMessage('att-video-loaded', '*')
+
+        //parent.postMessage('att-video-loaded', '*')
         // send player size
         resizePlayer()
         // init api
@@ -134,7 +143,18 @@ const getVideoSize = () => {
     }
 }
 
+const displayControls = (display) => {
+    const controls = window.document.querySelector('.shaka-controls-container')
+    if (display) {
+        controls.setAttribute('shown', 'true')
+    } else {
+        controls.removeAttribute('shown')
+    }
+}
+
+window.displayControls = displayControls
 const initApi = () => {
+
     // listen for player size changes
     window.addEventListener('resize', resizePlayer)
     // listen from parent
@@ -146,6 +166,12 @@ const initApi = () => {
                 break
             case 'att-video-size':
                 parent.postMessage(getVideoSize(), '*')
+                break
+            case 'att-controls-display':
+                displayControls(true)
+                break
+            case 'att-controls-hide':
+                displayControls(false)
                 break
             default:
                 break
