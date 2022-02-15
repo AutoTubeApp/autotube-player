@@ -45,7 +45,7 @@ const hydrateHtml = () => {
 
 const handleMessage = (event) => {
   if (event.data === 'att-video-loaded') {
-    getMain().classList.remove('opacity-0')
+    //getMain().classList.remove('opacity-0')
   }
 }
 // main
