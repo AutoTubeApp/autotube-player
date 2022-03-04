@@ -2,26 +2,36 @@ import './index.css'
 
 // head
 const scripts = [
-  ['https://cdnjs.cloudflare.com/ajax/libs/shaka-player/3.3.1/shaka-player.compiled.js'],
-  ['https://cdnjs.cloudflare.com/ajax/libs/shaka-player/3.3.1/shaka-player.ui.min.js'],
-  ['https://www.gstatic.com/cv/js/sender/v1/cast_sender.js']
+  'https://cdnjs.cloudflare.com/ajax/libs/shaka-player/3.3.1/shaka-player.compiled.js',
+  'https://cdnjs.cloudflare.com/ajax/libs/shaka-player/3.3.1/shaka-player.ui.min.js',
+  'https://www.gstatic.com/cv/js/sender/v1/cast_sender.js'
 ]
 
 const css = [
-  ['https://cdnjs.cloudflare.com/ajax/libs/shaka-player/3.3.1/controls.min.css']
+  'https://cdnjs.cloudflare.com/ajax/libs/shaka-player/3.3.1/controls.min.css'
 ]
+
+// if this video is served from IPFS gateway, we need to add IPFS scripts
+//const location = window.location.href
+const location = "https://ipfs.autotube.app/ipfs/bafybeibnkk2kwafzvwiuxckhn7wtrui27pbijx33mmgfed3x2nqe27qnma/"
+const isAvailableThroughIPFS = location.includes('/ipfs/')
+if (isAvailableThroughIPFS) {
+  scripts.push('//cdnjs.cloudflare.com/ajax/libs/ipfs/0.58.7-rc.1/index.min.js')
+}
+
 
 // add scripts
 scripts.forEach(script => {
   const scriptTag = document.createElement('script')
-  scriptTag.src = script[0]
+  scriptTag.src = script
   document.head.appendChild(scriptTag)
 })
+
 
 // add css
 css.forEach(css => {
   const cssTag = document.createElement('link')
-  cssTag.href = css[0]
+  cssTag.href = css
   cssTag.rel = 'stylesheet'
   document.head.appendChild(cssTag)
 })
@@ -163,7 +173,6 @@ const displayControls = (display) => {
 
 window.displayControls = displayControls
 const initApi = () => {
-
   // listen for player size changes
   window.addEventListener('resize', resizePlayer)
   // listen from parent
