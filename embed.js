@@ -38,6 +38,7 @@ window.addEventListener('att-script-loaded', async () => {
   // if all scripts are loaded, we can launch init()
   const nbScriptsToLoad = scriptsToLoad.length
   if (nbScriptLoaded === nbScriptsToLoad) {
+    console.debug('all scripts loaded, launching init()')
     await init()
   }
 })
