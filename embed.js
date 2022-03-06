@@ -34,6 +34,7 @@ if (isAvailableThroughIPFS()) {
 // loader watcher: wait for all scripts to be loaded before launching init
 window.addEventListener('att-script-loaded', async () => {
   nbScriptLoaded++
+  console.debug('script loaded: ', nbScriptLoaded)
   // if all scripts are loaded, we can launch init()
   const nbScriptsToLoad = scriptsToLoad.length
   if (nbScriptLoaded === nbScriptsToLoad) {
@@ -44,11 +45,12 @@ window.addEventListener('att-script-loaded', async () => {
 scriptsToLoad.forEach(script => {
   const scriptTag = document.createElement('script')
   scriptTag.addEventListener('load', () => {
+    console.debug('script loaded: ', script)
     window.dispatchEvent(new Event('att-script-loaded'))
   })
   scriptTag.async = false
   scriptsToLoad.crossOrigin = true
-  scriptTag.src = dynamicLoading === null ? `assets/${script}` : `//player.autotube.app/assets/${script}`
+  scriptTag.src = dynamicLoading === null ? `assets/${script}` : `https://player.autotube.app/assets/${script}`
   document.head.appendChild(scriptTag)
 })
 
