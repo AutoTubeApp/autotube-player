@@ -5,14 +5,6 @@ allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; pic
 </iframe>
 `
 
-const getIframe = () => {
-  return window.document.querySelector('#iVideo')
-}
-
-const getMain = () => {
-  return window.document.querySelector('main')
-}
-
 const getBaseUrl = () => {
   return window.location.href.split('?', 1)[0].split('/').slice(0, -1).join('/')
 }
@@ -43,11 +35,32 @@ const hydrateHtml = () => {
   window.document.querySelector('#dash-link').innerHTML = dashLink
 }
 
+const logElm = document.getElementById('log')
+const bwInElem = document.getElementById('bw-in')
+const bwOutElem = document.getElementById('bw-out')
+
+
+const updateMonitor = (data) => {
+  logElm.innerHTML = `Connected to ${data.peersConnected} peers`
+  bwInElem.innerHTML = `${data.deltaIn / 2}<span class="text-xl">&#8595;</span>`
+  bwOutElem.innerHTML = `<span class="text-xl">&#8593;</span>${data.deltaOut / 2}`
+}
+
+
 const handleMessage = (event) => {
-  if (event.data === 'att-video-loaded') {
-    //getMain().classList.remove('opacity-0')
+  console.debug('message received', event.data)
+  switch (event.data.type) {
+    case 'att-video-loaded':
+      break
+    case 'att-ipfs-available':
+      document.getElementById('monitor').classList.remove('hidden')
+      break
+    case 'monitoring':
+      updateMonitor(event.data.data)
+      break
   }
 }
+
 // main
 window.addEventListener('message', handleMessage)
 

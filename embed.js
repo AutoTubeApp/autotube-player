@@ -1,37 +1,65 @@
 import './index.css'
+import addPlugin from "./ipfs_plugin"
 
-// head
-const scripts = [
-  'https://cdnjs.cloudflare.com/ajax/libs/shaka-player/3.3.1/shaka-player.compiled.js',
-  'https://cdnjs.cloudflare.com/ajax/libs/shaka-player/3.3.1/shaka-player.ui.min.js',
-  'https://www.gstatic.com/cv/js/sender/v1/cast_sender.js'
-]
+const posterUrl = "thumbnail.jpg"
+let nbScriptLoaded = 0
+let video
 
-const css = [
-  'https://cdnjs.cloudflare.com/ajax/libs/shaka-player/3.3.1/controls.min.css'
+// dynamically load scripts ?
+const dynamicLoading = new URLSearchParams(window.location.search).get('dyn')
+if (dynamicLoading === null) {
+  console.debug('loading static scripts')
+} else {
+  console.debug('loading dynamic')
+}
+// scripts to load
+let scriptsToLoad = [
+  'shaka-player.compiled.js',
+  'shaka-player.ui.min.js',
+  'cast_sender.js'
 ]
 
 // if this video is served from IPFS gateway, we need to add IPFS scripts
 //const location = window.location.href
-const location = "https://ipfs.autotube.app/ipfs/bafybeibnkk2kwafzvwiuxckhn7wtrui27pbijx33mmgfed3x2nqe27qnma/"
-const isAvailableThroughIPFS = location.includes('/ipfs/')
-if (isAvailableThroughIPFS) {
-  scripts.push('//cdnjs.cloudflare.com/ajax/libs/ipfs/0.58.7-rc.1/index.min.js')
+const location = "https://ipfs.autotube.app/ipfs/bafybeibnkk2kwafzvwiuxckhn7wtrui27pbijx33mmgfed3x2nqe27qnma/embed.html"
+const isAvailableThroughIPFS = () => {
+  return location.includes('/ipfs/')
+}
+if (isAvailableThroughIPFS()) {
+  // Add IPFS scripts
+  scriptsToLoad.push('ipfs.min.js')
 }
 
+// loader watcher: wait for all scripts to be loaded before launching init
+window.addEventListener('att-script-loaded', async () => {
+  nbScriptLoaded++
+  // if all scripts are loaded, we can launch init()
+  const nbScriptsToLoad = scriptsToLoad.length
+  if (nbScriptLoaded === nbScriptsToLoad) {
+    await init()
+  }
+})
 
-// add scripts
-scripts.forEach(script => {
+scriptsToLoad.forEach(script => {
   const scriptTag = document.createElement('script')
-  scriptTag.src = script
+  scriptTag.addEventListener('load', () => {
+    window.dispatchEvent(new Event('att-script-loaded'))
+  })
+  scriptTag.async = false
+  scriptsToLoad.crossOrigin = true
+  scriptTag.src = dynamicLoading === null ? `assets/${script}` : `//player.autotube.app/assets/${script}`
   document.head.appendChild(scriptTag)
 })
 
-
 // add css
+const css = [
+  'index.css',
+  'controls.min.css'
+]
+
 css.forEach(css => {
   const cssTag = document.createElement('link')
-  cssTag.href = css
+  cssTag.href = dynamicLoading === null ? `assets/${css}` : `//player.autotube.app/assets/${css}`
   cssTag.rel = 'stylesheet'
   document.head.appendChild(cssTag)
 })
@@ -52,27 +80,106 @@ const body = `
 `
 document.querySelector('#app').innerHTML = body
 
-const posterUrl = "thumbnail.jpg"
-let video
 
-const isIOSDevice = () => {
-  return !!navigator.userAgent && /iPad|iPhone|iPod/.test(navigator.userAgent);
+// init launched when all scripts are loaded
+const init = async () => {
+  // IPFS
+  if (isAvailableThroughIPFS()) {
+    // Send message to parent
+    parent.postMessage({type: 'att-ipfs-available'}, '*')
+    try {
+      await initIpfs()
+    } catch (e) {
+      console.error("ipfs initialization failed", e)
+    }
+  }
+
+  // add IPFS plugin to shaka player if available
+  if (isAvailableThroughIPFS()) {
+    addPlugin(window.shaka)
+    console.debug('Shaka Ipfs plugin loaded')
+  }
+
+  // wait for shaka player UI to be loaded
+  /*  console.debug("wait for shaka player to be loaded")
+    await waitForShakaPlayerUiToBeLoaded()
+    console.debug('shaka player ui loaded')*/
+
+
+  // Install built-in polyfills to patch browser incompatibilities.
+  // await window.shaka.polyfill.installAll()
+  /*console.debug('sleep for 1 seconds')
+  await sleep(1000)*/
+
+  // Check to see if the browser supports the basic APIs Shaka needs.
+  if (window.shaka.Player.isBrowserSupported()) {
+    // Everything looks good!
+    await initPlayer();
+  } else {
+    // This browser does not have the minimum set of APIs we need.
+    console.error('Browser not supported!')
+    alert('Browsers not supported!')
+  }
 }
 
-// if MediaSource is not supported, switch to HLS
-const getVideoManifest = () => {
-  return window['MediaSource'] ? 'dash.mpd' : 'master.m3u8'
+const initIpfs = async () => {
+  console.debug('Init IPFS')
+  // drop indexDB randomly
+  /*  const rand = Math.floor(Math.random() * (10))
+    if (rand === 1) {
+      window.indexedDB.databases().then(async (r) => {
+        for (let i = 0; i < r.length; i++) await window.indexedDB.deleteDatabase(r[i].name)
+      })
+    }*/
+
+  const node = await window.Ipfs.create({
+    config: {
+      Addresses: {
+        Swarm: [
+          // This is a public webrtc-star server
+          //'/dns4/wrtc-star1.par.dwebops.pub/tcp/443/wss/p2p-webrtc-star',
+          //'/dns4/wrtc-star2.sjc.dwebops.pub/tcp/443/wss/p2p-webrtc-star',
+          '/dns4/murmuring-beach-38638.herokuapp.com/tcp/443/wss/p2p-webrtc-star',
+          '/dns4/autotubegforvqyq-webrtcstarsignaling.functions.fnc.fr-par.scw.cloud/tcp/443/wss/p2p-webrtc-star',
+          '/ip4/149.202.186.124/tcp/4001/p2p/Qmap4PMiDfaGuPgnoQD4qADd9g4UD1Uvb2vKewNdQGtUrW'
+        ]
+      }
+    },
+    //start: true,
+    /*    preload: {
+          enabled: false,
+          addresses: [
+            '/dnsaddr/ipfs.autotube.app/https'
+          ]
+        },*/
+  })
+
+  console.debug('IPFS node created')
+
+  const info = await node.id()
+  console.debug('IPFS node id', info.id)
+
+  // Connect to peer separately to handle connection errors
+  // AutoTube peer
+  try {
+    console.debug('Connecting to AutoTube peer')
+    await node.swarm.connect('/dns4/ipfs.autotube.app/tcp/443/wss/p2p/Qmap4PMiDfaGuPgnoQD4qADd9g4UD1Uvb2vKewNdQGtUrW')
+    console.debug('Connected to AutoTube peer')
+  } catch (e) {
+    console.error('Failed to connect to AutoTube peer', e)
+  }
+
+  sendMonitoring(node)
+  window.node = node
 }
 
-// shaka player
-const initShakaPlayer = async () => {
-
+const initPlayer = async () => {
+  // init shaka
   //console.log('Shake UI loaded')
   // When using the UI, the player is made automatically by the UI object.
   video = document.getElementById('video')
   // set poster
   video.setAttribute('poster', posterUrl)
-  //video.setAttribute('style', "background-color: black;")
 
   const ui = video.ui
   const controls = ui.getControls()
@@ -83,6 +190,16 @@ const initShakaPlayer = async () => {
   window.ui = ui
 
   // config
+  // https://shaka-player-demo.appspot.com/docs/api/shaka.extern.html#.RetryParameters
+  const retryParameters = {
+    "maxAttempts": 4,
+    "baseDelay": 6000,
+    "backoffFactor": 2,
+    "fuzzFactor": 0.5,
+    "timeout": 150000,
+    "stallTimeout": 10000,
+    "connectionTimeout": 40000
+  }
   player.configure({
     abr: { // let it load a 3500 kbps version first
       defaultBandwidthEstimate: 10000000
@@ -90,18 +207,20 @@ const initShakaPlayer = async () => {
     streaming: {
       bufferingGoal: 4, // small buffers to enable quick quality switch
       rebufferingGoal: 2,
-      bufferBehind: 20
+      bufferBehind: 20,
+      retryParameters
     },
     manifest: {
-      defaultPresentationDelay: 30
+      defaultPresentationDelay: 30,
+      retryParameters
     }
   })
 
   // Listen for error events.
-  player.addEventListener('error', onPlayerErrorEvent)
+  //player.addEventListener('error', onPlayerErrorEvent)
   player.addEventListener('buffering', (evt) => {
     if (!evt.buffering) {
-      parent.postMessage('att-video-loaded', '*')
+      parent.postMessage({type: 'att-video-loaded'}, '*')
     }
   })
   controls.addEventListener('error', onUIErrorEvent)
@@ -110,13 +229,13 @@ const initShakaPlayer = async () => {
   // Try to load a manifest.
   // This is an asynchronous process.
   try {
-    //this.player.src = getVideoManifest()
-    await player.load(getVideoManifest())
+    const manifest = getVideoManifest()
+    //console.debug('manifest', manifest)
+    await player.load(manifest)
     // This runs if the asynchronous load is successful.
     //console.log('The video has now been loaded!')
     isIOSDevice() && video.play()
 
-    //parent.postMessage('att-video-loaded', '*')
     // send player size
     resizePlayer()
     // init api
@@ -126,26 +245,30 @@ const initShakaPlayer = async () => {
   }
 }
 
-const initFailed = (evt) => {
-  // Handle the failure to load; errorEvent.detail.reasonCode has a
-  // shaka.ui.FailReasonCode describing why.
-  console.error('Unable to load the UI library!' + evt.detail)
-  //console.log(evt)
-}
-
-const onPlayerErrorEvent = (evt) => {
-  // Extract the shaka.util.Error object from the event.
-  onPlayerError(evt.detail)
-}
-
 function onPlayerError(error) {
   // Handle player error
   console.error('Error code', error.code, 'object', error)
+  // bad solution, but it works
+  window.location.reload()
 }
 
 function onUIErrorEvent(evt) {
   // Extract the shaka.util.Error object from the event.
   onPlayerError(evt.detail)
+}
+
+const isIOSDevice = () => {
+  return !!navigator.userAgent && /iPad|iPhone|iPod/.test(navigator.userAgent);
+}
+
+// if MediaSource is not supported, switch to HLS
+const getVideoManifest = () => {
+  if (isAvailableThroughIPFS()) {
+    // get cid
+    const cid = location.split('/ipfs/')[1].split('/')[0]
+    return window['MediaSource'] ? `ipfs://${cid}/dash.mpd` : `ipfs://${cid}/master.m3u8`
+  }
+  return window['MediaSource'] ? 'dash.mpd' : 'master.m3u8'
 }
 
 const resizePlayer = () => {
@@ -172,6 +295,35 @@ const displayControls = (display) => {
 }
 
 window.displayControls = displayControls
+
+// send monitor event to parent
+const sendMonitoring = (node) => {
+  let prevBwStats = null
+  let deltaIn = 0, deltaOut = 0
+  setInterval(async () => {
+    const peersConnected = await node.swarm.peers()
+    for await (const bwStats of node.stats.bw()) {
+      console.debug(`Total in: ${bwStats.totalIn} bytes - out: ${bwStats.totalOut} bytes`)
+      if (prevBwStats !== null) {
+        // eslint-disable-next-line no-undef
+        deltaIn = (bwStats.totalIn - prevBwStats.totalIn) / BigInt(1000)
+        // eslint-disable-next-line no-undef
+        deltaOut = (bwStats.totalOut - prevBwStats.totalOut) / BigInt(1000)
+      }
+      prevBwStats = bwStats
+    }
+    const message = {
+      type: 'monitoring',
+      data: {
+        peersConnected: peersConnected.length,
+        deltaIn: Number(deltaIn),
+        deltaOut: Number(deltaOut)
+      }
+    }
+    parent.postMessage(message, '*')
+  }, 2000)
+}
+
 const initApi = () => {
   // listen for player size changes
   window.addEventListener('resize', resizePlayer)
@@ -197,11 +349,10 @@ const initApi = () => {
   })
 }
 
-// shaka player events
-// Listen to the custom shaka-ui-loaded event, to wait until the UI is loaded.
-document.addEventListener('shaka-ui-loaded', initShakaPlayer)
-// Listen to the custom shaka-ui-load-failed event, in case Shaka Player fails
-// to load (e.g. due to lack of browser support).
-document.addEventListener('shaka-ui-load-failed', initFailed)
+/*const sleep = (ms) => {
+  return new Promise(resolve => setTimeout(resolve, ms))
+}*/
+
+//window.addEventListener('load', init)
 
 
