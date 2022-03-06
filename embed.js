@@ -22,6 +22,7 @@ let scriptsToLoad = [
 // if this video is served from IPFS gateway, we need to add IPFS scripts
 const location = window.location.href
 //const location = "https://ipfs.autotube.app/ipfs/bafybeibnkk2kwafzvwiuxckhn7wtrui27pbijx33mmgfed3x2nqe27qnma/embed.html"
+console.debug("Location: ", location)
 const isAvailableThroughIPFS = () => {
   return location.includes('/ipfs/')
 }
@@ -249,7 +250,7 @@ function onPlayerError(error) {
   // Handle player error
   console.error('Error code', error.code, 'object', error)
   // bad solution, but it works
-  window.location.reload()
+  //window.location.reload()
 }
 
 function onUIErrorEvent(evt) {
