@@ -20,8 +20,8 @@ let scriptsToLoad = [
 ]
 
 // if this video is served from IPFS gateway, we need to add IPFS scripts
-//const location = window.location.href
-const location = "https://ipfs.autotube.app/ipfs/bafybeibnkk2kwafzvwiuxckhn7wtrui27pbijx33mmgfed3x2nqe27qnma/embed.html"
+const location = window.location.href
+//const location = "https://ipfs.autotube.app/ipfs/bafybeibnkk2kwafzvwiuxckhn7wtrui27pbijx33mmgfed3x2nqe27qnma/embed.html"
 const isAvailableThroughIPFS = () => {
   return location.includes('/ipfs/')
 }
