@@ -3,6 +3,7 @@ import addPlugin from "./ipfs_plugin"
 
 const posterUrl = "thumbnail.jpg"
 let nbScriptLoaded = 0
+let videoRatio = null
 let video
 
 // dynamically load scripts ?
@@ -22,7 +23,7 @@ let scriptsToLoad = [
 // if this video is served from IPFS gateway, we need to add IPFS scripts
 const location = window.location.href
 //const location = "https://ipfs.autotube.app/ipfs/bafybeibnkk2kwafzvwiuxckhn7wtrui27pbijx33mmgfed3x2nqe27qnma/embed.html"
-console.debug("Location: ", location)
+//const location = "https://ipfs.autotube.app/ipfs/QmbyaCE68VeYgmiyB7SqPm3GKiatAMzhP4oBHZGj4mD5ue/embed.html"
 const isAvailableThroughIPFS = () => {
   return location.includes('/ipfs/')
 }
@@ -51,7 +52,7 @@ scriptsToLoad.forEach(script => {
   })
   scriptTag.async = false
   scriptsToLoad.crossOrigin = true
-  scriptTag.src = dynamicLoading === null ? `assets/${script}` : `https://player.autotube.app/assets/${script}`
+  scriptTag.src = dynamicLoading === null ? script : `https://player.autotube.app/p/${script}`
   document.head.appendChild(scriptTag)
 })
 
@@ -63,7 +64,7 @@ const css = [
 
 css.forEach(css => {
   const cssTag = document.createElement('link')
-  cssTag.href = dynamicLoading === null ? `assets/${css}` : `//player.autotube.app/assets/${css}`
+  cssTag.href = dynamicLoading === null ? css : `//player.autotube.app/p/${css}`
   cssTag.rel = 'stylesheet'
   document.head.appendChild(cssTag)
 })
@@ -239,10 +240,8 @@ const initPlayer = async () => {
     // This runs if the asynchronous load is successful.
     //console.log('The video has now been loaded!')
     isIOSDevice() && video.play()
-
-    // send player size
-    resizePlayer()
-    // init api
+    // resize && send player size
+    await resizePlayer()
     initApi()
   } catch (error) {
     onPlayerError(error)
@@ -275,9 +274,22 @@ const getVideoManifest = () => {
   return window['MediaSource'] ? 'dash.mpd' : 'master.m3u8'
 }
 
-const resizePlayer = () => {
-  const videoContainer = window.document.querySelector('.shaka-video-container')
-  videoContainer.style.height = `${window.innerHeight}px`
+const getVideoRatio = () => {
+  if (typeof (videoRatio) === 'number') {
+    return videoRatio
+  }
+  const stats = document.getElementById('video').ui.getControls().getPlayer().getStats()
+  videoRatio = stats.width / stats.height
+  return videoRatio
+}
+
+const resizePlayer = async () => {
+
+  const ratio = getVideoRatio()
+  const videoContainer = document.getElementById('player-container')
+  videoContainer.style.height = `${window.innerWidth / ratio}px`
+  // send player size to parent to resize iframe
+  parent.postMessage({type: 'att-player-size', width: videoContainer.offsetWidth , height: videoContainer.offsetHeight}, '*')
 }
 
 const getVideoSize = () => {
@@ -353,9 +365,9 @@ const initApi = () => {
   })
 }
 
-/*const sleep = (ms) => {
+const sleep = (ms) => {
   return new Promise(resolve => setTimeout(resolve, ms))
-}*/
+}
 
 //window.addEventListener('load', init)
 

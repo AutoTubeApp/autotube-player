@@ -7,24 +7,23 @@
     <meta name="viewport" content="width=device-width, initial-scale=1"/>
     <meta name="twitter:card" content="player"/>
     <meta name="twitter:site" content="@autotube_app"/>
-    <meta name="twitter:url" content="##siteUrl##/"/>
     <meta name="twitter:title" content="##cardTitle##"/>
     <meta name="twitter:description" content="##cardDescription##"/>
-    <meta name="twitter:image" content="##siteUrl##/thumbnail.jpg"/>
-    <meta name="twitter:player" content="##siteUrl##/embed.html"/>
+    <meta name="twitter:image" content="##playerUrl##/thumbnail.jpg"/>
+    <meta name="twitter:player" content="##playerUrl##/"/>
     <meta name="twitter:player:width" content="##playerW##">
     <meta name="twitter:player:height" content="##playerH##">
     <meta property="og:ttl" content="600"/>
     <meta property="og:site_name" content="AutoTube"/>
     <meta property="og:url" content="##siteUrl##/"/>
     <meta property="og:title" content="##cardTitle##"/>
-    <meta property="og:image" content="##siteUrl##/thumbnail-play.jpg"/>
+    <meta property="og:image" content="##playerUrl##/thumbnail-play.jpg"/>
     <meta property="og:image:width" content="##playerW##"/>
     <meta property="og:image:height" content="##playerH##"/>
     <meta property="og:description" content="##cardDescription##"/>
-    <meta property="al:web:url" content="##siteUrl##"/>
+    <meta property="al:web:url" content="##siteUrl##/"/>
     <meta property="og:type" content="video.other"/>
-    <meta property="og:video" content="##siteUrl##/embed.html"/>
+    <meta property="og:video" content="##playerUrl##"/>
     <meta property="og:video:type" content="text/html"/>
     <meta property="og:video:width" content="##playerW##">
     <meta property="og:video:height" content="##playerH##">
@@ -39,25 +38,23 @@
             <header class="text-center my-4">
                 <h1 id="title" class="mt-3 mb-6 text-4xl font-medium">##title##</h1>
             </header>
-            <div id="iframe-container">
                 <iframe
-                        class="w-full aspect-video"
+                        class="w-full"
                         id="iVideo"
-                        src="embed.html"
-                        title="Autotube video player"
+                        src="##playerUrl##"
+                        title="##title## -Autotube video player"
                         allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
                         allowfullscreen
                         scrolling="no"
                 >
                 </iframe>
-            </div>
             <div id="monitor" class="flex flex-row flex-grow p-1 pt-0 text-zinc-400 hidden">
                 <div id="log" class="flex-grow pt-1.5">Initializing IPFS node...</div>
                 <div id="bw-in" class="basis-14 text-right">0<span class="text-xl">&#8595;</span></div>
                 <div id="bw-out" class="basis-14 text-left"><span class="text-xl">&#8593;</span>0</div>
             </div>
             <div class="flex items-center mt-3">
-                <a href="https://www.facebook.com/sharer/sharer.php?u=##siteUrl##/"
+                <a id="social-fb"  href="https://www.facebook.com/sharer/sharer.php?u=##siteUrl##/"
                    role="button"
                    target="_blank"
                    rel="noopener noreferrer"
@@ -70,7 +67,7 @@
                     </svg>
                     <span class="text-sm text-white">Share</span>
                 </a>
-                <a href="https://twitter.com/intent/tweet?url=##siteUrl##&text=##cardTitle##&via=autotube_app"
+                <a id="social-tw"  href="https://twitter.com/intent/tweet?url=##siteUrl##&text=##cardTitle##&via=autotube_app"
                    role="button"
                    target="_blank"
                    rel="noopener noreferrer"
@@ -91,15 +88,20 @@
             <p class="my-3 mt-6">##description##</p>
             <h2 class="my-3 mt-7 text-lg">Embed video: copy and paste code below on your website</h2>
             <div id="embed-code"
-                 class="my-2 p-2 border rounded-md bg-white dark:bg-neutral-800 dark:border-neutral-600 break-all font-mono text-sm shadow-inner">
-                bala
+                 class="my-2 p-2 border rounded-md bg-white dark:bg-neutral-800 dark:border-neutral-600 break-all font-mono text-sm shadow-inner"
+            >
+                &lt;iframe width="560" height="315" src="##playerUrl##" title="##title##" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen&gt; &lt;/iframe&gt;
             </div>
             <h2 class="mt-7 text-lg">Dash manifest</h2>
             <div id="dash-link"
                  class="my-2 p-3 border rounded-md bg-white dark:bg-neutral-800 dark:border-neutral-600 break-all font-mono text-sm shadow-inner">
-                mani
+                ##playerUrl##/dash.mpd
             </div>
-
+            <h2 class="mt-7 text-lg">Raw Player URL</h2>
+            <div id="player-link"
+                 class="my-2 p-3 border rounded-md bg-white dark:bg-neutral-800 dark:border-neutral-600 break-all font-mono text-sm shadow-inner">
+                ##playerUrl##
+            </div>
         </main>
         <footer class="flex flex-col-reverse flex-grow mx-auto">
             <p class="pb-16 text-sm">Video encoded and published with

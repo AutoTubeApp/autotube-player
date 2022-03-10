@@ -1,9 +1,11 @@
 import './index.css'
 
-const embedTemplate = `<iframe  width="560" height="315" src="{{baseURL}}/embed.html" title="{{title}}" frameborder="0" 
+/*
+const embedTemplate = `<iframe  width="560" height="315" src="{{baseURL}}/p/embed.html" title="{{title}}" frameborder="0"
 allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen>
 </iframe>
 `
+*/
 
 const getBaseUrl = () => {
   return window.location.href.split('?', 1)[0].split('/').slice(0, -1).join('/')
@@ -15,7 +17,7 @@ const getBaseUrl = () => {
  * @author Chris Ferdinandi
  * @license MIT
  */
-if (!String.prototype.replaceAll) {
+/*if (!String.prototype.replaceAll) {
   String.prototype.replaceAll = function (str, newStr) {
     // If a regex pattern
     if (Object.prototype.toString.call(str).toLowerCase() === '[object regexp]') {
@@ -24,15 +26,19 @@ if (!String.prototype.replaceAll) {
     // If a string
     return this.replace(new RegExp(str, 'g'), newStr)
   }
-}
+}*/
 
 const hydrateHtml = () => {
-  const title = window.document.querySelector('title').innerText
+  const baseUrl = getBaseUrl()
+  document.getElementById('social-fb').href = `https://www.facebook.com/sharer/sharer.php?u=${baseUrl}`
+  document.getElementById('social-tw').href = `https://twitter.com/intent/tweet?url=${baseUrl}`
+
+/*  const title = window.document.querySelector('title').innerText
   let embed = embedTemplate.replaceAll('{{baseURL}}', getBaseUrl())
   embed = embed.replaceAll('{{title}}', title)
   const dashLink = getBaseUrl() + '/dash.mpd'
   window.document.querySelector('#embed-code').innerHTML = embed.replaceAll('<', '&lt').replaceAll('>', '&gt')
-  window.document.querySelector('#dash-link').innerHTML = dashLink
+  window.document.querySelector('#dash-link').innerHTML = dashLink*/
 }
 
 const logElm = document.getElementById('log')
@@ -46,11 +52,13 @@ const updateMonitor = (data) => {
   bwOutElem.innerHTML = `<span class="text-xl">&#8593;</span>${data.deltaOut / 2}`
 }
 
-
 const handleMessage = (event) => {
   console.debug('message received', event.data)
   switch (event.data.type) {
     case 'att-video-loaded':
+      break
+    case 'att-player-size':
+      document.getElementById('iVideo').style.height = `${event.data.height}px`
       break
     case 'att-ipfs-available':
       document.getElementById('monitor').classList.remove('hidden')

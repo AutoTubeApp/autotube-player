@@ -8,13 +8,13 @@ module.exports = defineConfig({
         rollupOptions: {
             input: {
                 main: resolve(__dirname, 'index.html'),
-                player: resolve(__dirname, 'embed.html'),
+                player: resolve(__dirname, 'p/index.html'),
                 embed: resolve(__dirname, 'embed.js'),
             },
             output: {
-                entryFileNames: `assets/[name].js`,
-                chunkFileNames: `assets/[name].js`,
-                assetFileNames: `assets/[name].[ext]`
+                entryFileNames: `p/[name].js`,
+                chunkFileNames: `p/[name].js`,
+                assetFileNames: `p/[name].[ext]`
             }
         }
     },
