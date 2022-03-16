@@ -1,12 +1,13 @@
-import './index.css'
-import addPlugin from "./ipfs_plugin"
+import '../src/index.css'
+
+import addPlugin from "../src/ipfs_plugin"
 
 const posterUrl = "thumbnail.jpg"
 let nbScriptLoaded = 0
 let videoRatio = null
 let video
 
-// dynamically load scripts ?
+// load scripts dynamically ?
 const dynamicLoading = new URLSearchParams(window.location.search).get('dyn')
 if (dynamicLoading === null) {
   console.debug('loading static scripts')
@@ -17,7 +18,8 @@ if (dynamicLoading === null) {
 let scriptsToLoad = [
   'shaka-player.compiled.js',
   'shaka-player.ui.min.js',
-  'cast_sender.js'
+  'cast_sender.js',
+  'options.js',
 ]
 
 // if this video is served from IPFS gateway, we need to add IPFS scripts
@@ -44,6 +46,7 @@ window.addEventListener('att-script-loaded', async () => {
   }
 })
 
+// add scripts tags to the page
 scriptsToLoad.forEach(script => {
   const scriptTag = document.createElement('script')
   scriptTag.addEventListener('load', () => {
@@ -52,16 +55,20 @@ scriptsToLoad.forEach(script => {
   })
   scriptTag.async = false
   scriptsToLoad.crossOrigin = true
-  scriptTag.src = dynamicLoading === null ? script : `https://player.autotube.app/p/${script}`
+  // ! options.js must be loaded from the same origin as the page
+  if (script === 'options.js') {
+    scriptTag.src = script
+  } else {
+    scriptTag.src = dynamicLoading === null ? script : `https://player.autotube.app/p/${script}`
+  }
   document.head.appendChild(scriptTag)
 })
 
-// add css
+// add css tags
 const css = [
   'index.css',
   'controls.min.css'
 ]
-
 css.forEach(css => {
   const cssTag = document.createElement('link')
   cssTag.href = dynamicLoading === null ? css : `//player.autotube.app/p/${css}`
@@ -146,17 +153,12 @@ const initIpfs = async () => {
           //'/dns4/wrtc-star2.sjc.dwebops.pub/tcp/443/wss/p2p-webrtc-star',
           '/dns4/murmuring-beach-38638.herokuapp.com/tcp/443/wss/p2p-webrtc-star',
           '/dns4/autotubegforvqyq-webrtcstarsignaling.functions.fnc.fr-par.scw.cloud/tcp/443/wss/p2p-webrtc-star',
+          //'/dns4/wrtc-star1.autotube.app/tcp/443/wss/p2p-webrtc-star',
+          //'/dns4/wrtc-star2.autotube.app/tcp/443/wss/p2p-webrtc-star',
           '/ip4/149.202.186.124/tcp/4001/p2p/Qmap4PMiDfaGuPgnoQD4qADd9g4UD1Uvb2vKewNdQGtUrW'
         ]
       }
-    },
-    //start: true,
-    /*    preload: {
-          enabled: false,
-          addresses: [
-            '/dnsaddr/ipfs.autotube.app/https'
-          ]
-        },*/
+    }
   })
 
   console.debug('IPFS node created')
@@ -165,15 +167,15 @@ const initIpfs = async () => {
   console.debug('IPFS node id', info.id)
 
   // Connect to peer separately to handle connection errors
-  // AutoTube peer
   try {
     console.debug('Connecting to AutoTube peer')
     await node.swarm.connect('/dns4/ipfs.autotube.app/tcp/443/wss/p2p/Qmap4PMiDfaGuPgnoQD4qADd9g4UD1Uvb2vKewNdQGtUrW')
     console.debug('Connected to AutoTube peer')
+    await node.swarm.connect(`/dns4/${options.hostname}/tcp/443/wss/p2p/${options.peerId}`)
+    console.debug(`Connected to ${options.hostname} ${options.peerId} peer`)
   } catch (e) {
-    console.error('Failed to connect to AutoTube peer', e)
+    console.error('Failed to connect to peer', e)
   }
-
   sendMonitoring(node)
   window.node = node
 }
@@ -364,11 +366,3 @@ const initApi = () => {
     }
   })
 }
-
-const sleep = (ms) => {
-  return new Promise(resolve => setTimeout(resolve, ms))
-}
-
-//window.addEventListener('load', init)
-
-

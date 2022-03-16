@@ -4,3 +4,8 @@ dist
 dist-ssr
 *.local
 /public-*
+/public/p/chunk-stream*
+/public/p/init-stream*
+/public/p/thumb*
+/public/p/meta.json
+/public/p/dash.mpd

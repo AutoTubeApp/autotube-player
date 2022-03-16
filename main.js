@@ -1,50 +1,27 @@
-import './index.css'
-
-/*
-const embedTemplate = `<iframe  width="560" height="315" src="{{baseURL}}/p/embed.html" title="{{title}}" frameborder="0"
-allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen>
-</iframe>
-`
-*/
+import './src/index.css'
 
 const getBaseUrl = () => {
   return window.location.href.split('?', 1)[0].split('/').slice(0, -1).join('/')
 }
 
-/**
- * String.prototype.replaceAll() polyfill
- * https://gomakethings.com/how-to-replace-a-section-of-a-string-with-another-one-with-vanilla-js/
- * @author Chris Ferdinandi
- * @license MIT
- */
-/*if (!String.prototype.replaceAll) {
-  String.prototype.replaceAll = function (str, newStr) {
-    // If a regex pattern
-    if (Object.prototype.toString.call(str).toLowerCase() === '[object regexp]') {
-      return this.replace(str, newStr)
-    }
-    // If a string
-    return this.replace(new RegExp(str, 'g'), newStr)
-  }
-}*/
+// in dev mode we need to replace iframe.src from ##baseUrl## to p/
+if (import.meta.env.DEV) {
+  console.debug('development mode')
+  window.addEventListener('load', () => {
+    const iframe = document.querySelector('iframe')
+    iframe.src =  '/p/'
+  })
+}
 
 const hydrateHtml = () => {
   const baseUrl = getBaseUrl()
   document.getElementById('social-fb').href = `https://www.facebook.com/sharer/sharer.php?u=${baseUrl}`
   document.getElementById('social-tw').href = `https://twitter.com/intent/tweet?url=${baseUrl}`
-
-/*  const title = window.document.querySelector('title').innerText
-  let embed = embedTemplate.replaceAll('{{baseURL}}', getBaseUrl())
-  embed = embed.replaceAll('{{title}}', title)
-  const dashLink = getBaseUrl() + '/dash.mpd'
-  window.document.querySelector('#embed-code').innerHTML = embed.replaceAll('<', '&lt').replaceAll('>', '&gt')
-  window.document.querySelector('#dash-link').innerHTML = dashLink*/
 }
 
 const logElm = document.getElementById('log')
 const bwInElem = document.getElementById('bw-in')
 const bwOutElem = document.getElementById('bw-out')
-
 
 const updateMonitor = (data) => {
   logElm.innerHTML = `Connected to ${data.peersConnected} peers`
@@ -87,3 +64,19 @@ selectElement.addEventListener('change', (evt) => {
 hydrateHtml()
 
 
+/**
+ * String.prototype.replaceAll() polyfill
+ * https://gomakethings.com/how-to-replace-a-section-of-a-string-with-another-one-with-vanilla-js/
+ * @author Chris Ferdinandi
+ * @license MIT
+ */
+/*if (!String.prototype.replaceAll) {
+  String.prototype.replaceAll = function (str, newStr) {
+    // If a regex pattern
+    if (Object.prototype.toString.call(str).toLowerCase() === '[object regexp]') {
+      return this.replace(str, newStr)
+    }
+    // If a string
+    return this.replace(new RegExp(str, 'g'), newStr)
+  }
+}*/
